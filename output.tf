@@ -1,5 +1,5 @@
 output "public_ip" {
-    value = aws_nat_gateway.nat.public_ip
+  value = aws_nat_gateway.nat.public_ip
 }
 
 output "bastion_ip" {

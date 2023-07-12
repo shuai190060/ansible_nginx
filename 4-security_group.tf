@@ -28,17 +28,25 @@ resource "aws_security_group" "private_instance_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [ "0.0.0.0/0" ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-  from_port   = 22
-  to_port     = 22
-  protocol    = "tcp"
-  security_groups = [aws_security_group.ansible_sg_ssh.id]
-}
+#   egress {
+#     from_port       = 22
+#     to_port         = 22
+#     protocol        = "tcp"
+#     cidr_blocks     = ["0.0.0.0/0"]
+#     security_groups = [aws_security_group.ansible_sg_ssh.id]
+#   }
+     egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.ansible_sg_ssh.id]
+  }
 
-  depends_on = [ aws_security_group.ansible_sg_ssh ]
+  depends_on = [aws_security_group.ansible_sg_ssh]
   tags = {
     "Name" = "ssh"
   }

@@ -97,33 +97,42 @@ resource "aws_route_table_association" "private" {
 
 
 resource "aws_network_acl" "network_acl" {
-  vpc_id = aws_vpc.vpc_ansible.id
-  subnet_ids = [ aws_subnet.private_subnet.id ]
+  vpc_id     = aws_vpc.vpc_ansible.id
+  subnet_ids = [aws_subnet.private_subnet.id]
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    action = "allow"
-    rule_no = 200
-    cidr_block  = "0.0.0.0/0"
+    from_port  = 22
+    to_port    = 22
+    protocol   = "tcp"
+    action     = "allow"
+    rule_no    = 200
+    cidr_block = "0.0.0.0/0"
   }
 
-#   ingress {
-#     from_port   = 0
-#     to_port     = 65535
-#     protocol    = "-1"
-#     action = "deny"
-#     rule_no = 100
-#     cidr_block  = "0.0.0.0/0"
-#   }
+  #   ingress {
+  #     from_port   = 0
+  #     to_port     = 65535
+  #     protocol    = "-1"
+  #     action = "deny"
+  #     rule_no = 100
+  #     cidr_block  = "0.0.0.0/0"
+  #   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    action = "allow"
-    rule_no = 200
-    cidr_block  = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+    protocol   = "-1"
+    action     = "allow"
+    rule_no    = 200
+    cidr_block = "0.0.0.0/0"
+  }
+
+  egress {
+    from_port  = 0
+    to_port    = 65535
+    protocol   = "tcp"
+    action     = "allow"
+    rule_no    = 300
+    cidr_block = "0.0.0.0/0"
   }
 }

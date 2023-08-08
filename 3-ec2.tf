@@ -32,11 +32,14 @@ resource "aws_instance" "ansible_1" {
 # bastion host
 
 resource "aws_instance" "bation_host" {
-  ami                         = "ami-016eb5d644c333ccb"
+  #   ami                         = "ami-016eb5d644c333ccb"
+  # swith to ubuntu to test k3s
+  ami                         = "ami-053b0d53c279acc90"
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnet.id
-  security_groups             = [aws_security_group.master_node_sg.id ]
+  security_groups             = [aws_security_group.master_node_sg.id]
   associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.kubernetes.name
 
   key_name = "ansible_ec2"
 
@@ -49,11 +52,14 @@ resource "aws_instance" "bation_host" {
 
 # add another ec2 as kubernetes node
 resource "aws_instance" "node" {
-  ami                         = "ami-016eb5d644c333ccb"
+  #   ami                         = "ami-016eb5d644c333ccb"
+  # swith to ubuntu to test k3s
+  ami                         = "ami-053b0d53c279acc90"
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnet.id
   security_groups             = [aws_security_group.worker_node_sg.id]
   associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.kubernetes.name
 
   key_name = "ansible_ec2"
 

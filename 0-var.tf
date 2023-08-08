@@ -33,3 +33,7 @@ variable "tags" {
 variable "ec2_type" {
   default = "t2.micro"
 }
+
+variable "s3_name" {
+  default = "papavonning"
+}

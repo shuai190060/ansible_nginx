@@ -31,7 +31,7 @@ resource "aws_security_group" "private_instance_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-     egress {
+  egress {
     from_port       = 0
     to_port         = 0
     protocol        = "-1"
@@ -47,10 +47,10 @@ resource "aws_security_group" "private_instance_sg" {
 }
 
 resource "aws_security_group" "master_node_sg" {
-    vpc_id = aws_vpc.vpc_ansible.id
-    name = "master_node_sg"
+  vpc_id = aws_vpc.vpc_ansible.id
+  name   = "master_node_sg"
 
-    ingress {
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -58,8 +58,23 @@ resource "aws_security_group" "master_node_sg" {
   }
 
   ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  # api server
+  ingress {
     from_port   = 6443
     to_port     = 6443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # flannel
+  ingress {
+    from_port   = 8472
+    to_port     = 8472
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -70,7 +85,7 @@ resource "aws_security_group" "master_node_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  # metrics server
   ingress {
     from_port   = 10250
     to_port     = 10250
@@ -106,13 +121,20 @@ resource "aws_security_group" "master_node_sg" {
 }
 
 resource "aws_security_group" "worker_node_sg" {
-  vpc_id = aws_vpc.vpc_ansible.id
-  name = "worker_node_sg"
+  vpc_id      = aws_vpc.vpc_ansible.id
+  name        = "worker_node_sg"
   description = "worker node security group"
 
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -129,6 +151,13 @@ resource "aws_security_group" "worker_node_sg" {
     to_port     = 32767
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    security_groups = [aws_security_group.master_node_sg.id]
   }
 
   egress {

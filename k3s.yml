@@ -1,0 +1,55 @@
+- name: create kubernetes cluster using rancher
+  hosts: manager
+  become: true
+
+  tasks:
+  - name: install k3s
+    shell: curl -sfL https://get.k3s.io | sh -
+
+  - name: get the local-ipv4 from metadata service
+    command: curl http://169.254.169.254/latest/meta-data/local-ipv4
+    register: local_ipv4_output
+  - name: set K3S_URL global variable
+    set_fact: 
+      K3S_URL: "{{ local_ipv4_output.stdout }}"
+    when: local_ipv4_output.rc == 0
+  - name: display the private IP address of manager node
+    debug:
+      var: K3S_URL
+
+  - name: output the K3S_TOKEN value
+    shell: cat /var/lib/rancher/k3s/server/node-token
+    register: k3s_token_output
+  - name: set the K3S_TOKEN variable
+    set_fact:
+      K3S_TOKEN: "{{ k3s_token_output.stdout }}"
+    when: k3s_token_output.rc == 0
+  - name: display the token variable
+    debug:
+      var: K3S_TOKEN
+  # set the firewall rule to open traffic on 6443 port
+  - name: add iptables rule to allow incoming traffic on port 6443
+    iptables:
+      chain: INPUT
+      protocol: tcp 
+      destination_port: 6443
+      jump: ACCEPT
+      state: present
+  - name: create directory for iptables rules
+    file: 
+      path: /etc/iptables 
+      state: directory
+  - name: save iptables rules 
+    shell: iptables-save > /etc/iptables/rules.v4
+
+
+
+- name: create kubernetes cluster using rancher
+  hosts: worker
+  become: true
+
+  tasks:
+  - name: install k3s
+    shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars['manager']['K3S_URL'] }}:6443 K3S_TOKEN={{ hostvars['manager']['K3S_TOKEN'] }} sh -
+
+

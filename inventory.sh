@@ -26,11 +26,11 @@ echo "[private]" >> inventory
 echo $vm1 >> inventory
 
 # create a k8s group for k8s ec2
-echo "[k8s]" >> inventory
-master="master ansible_host={bastion_ip} ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/ansible"
+echo "[k3s]" >> inventory
+master="manager ansible_host={bastion_ip} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/ansible"
 master=$(echo "$master" | sed "s/{bastion_ip}/$bastion_ip/g")
 echo $master >> inventory
-node="node ansible_host={node_ip} ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/ansible"
+node="node ansible_host={node_ip} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/ansible"
 node=$(echo "$node" | sed "s/{node_ip}/$node_ip/g")
 echo $node >> inventory
 
@@ -39,6 +39,8 @@ echo $master >> inventory
 
 echo "[worker]" >> inventory
 echo $node >> inventory
+
+
 
 
 
